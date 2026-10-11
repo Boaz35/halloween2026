@@ -1,26 +1,467 @@
 @import "tailwindcss";
 
+/* ── Design tokens — "Zemingo after dark" (docs/DESIGN.md v2.0) — single shared source ──
+   Zemingo brand with the lights off: Sand becomes the light, Sun is the candle, Neon marks data.
+   Sharp corners, hairlines, two weights (400/500). Variable names kept so every screen inherits. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0e0d0b;              /* night — warm, sand-tinted black */
+  --surface: #161510;         /* form / card */
+  --surface-raised: #1f1d17;  /* raised, hover */
+  --border-subtle: #2f2c23;   /* hairline dividers */
+  --control-border: #716b57;  /* essential control borders (3:1+) */
+  --text: #f2f0d9;            /* Zemingo Sand as ink */
+  --text-muted: #a8a38a;      /* metadata */
+  --text-faint: #6f6a58;      /* tertiary */
+  --primary: #fff282;         /* Zemingo Sun — CTA, active, selected */
+  --primary-deep: #e8d940;    /* Sun pressed / hover */
+  --on-primary: #000000;
+  --accent: #ff8fb0;          /* Zemingo Neon — data & statistic markers only */
+  --ember: #e8742c;           /* the mascot's pumpkin light — glow only, never UI */
+  --success: #9ccc9a;
+  --danger: #f0907f;
+  --ghost: #24221b;           /* ghosted chapter numerals */
+
+  --radius-control: 0px;
+  --radius-card: 0px;
+  --control-h: 48px;
+  --content-max: 1200px;
+  --gutter: 20px;
+  --ease: 200ms ease;
+  color-scheme: dark;
+}
+@media (min-width: 768px) {
+  :root { --gutter: 32px; }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border-subtle: var(--border-subtle);
+  --color-control: var(--control-border);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-ember: var(--ember);
+  --font-sans: var(--font-rubik), Arial, sans-serif;
+  --font-serif: var(--font-frank), Georgia, serif;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
+  --font-weight-extrabold: 500;
+  --font-weight-black: 500;
+  --radius-control: 0px;
+  --radius-card: 0px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html { background: var(--bg); scroll-behavior: smooth; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-rubik), Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
 }
+@media (min-width: 1024px) { body { font-size: 17px; } }
+
+/* Brand rule: sharp corners everywhere. Ellipse-shaped light/shadow layers are radial gradients, not radii. */
+*, *::before, *::after { border-radius: 0 !important; }
+strong, b { font-weight: 500; }
+
+/* Grain — breaks the digital flatness of the night. Fixed, never under clicks. */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  opacity: 0.07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+a { color: inherit; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+::selection { background: var(--primary); color: var(--on-primary); }
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* Local LTR islands for emails, URLs, numbers inside RTL (A24) */
+.ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+
+.container-page {
+  width: 100%;
+  max-width: calc(var(--content-max) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ── Typography — Rubik 400/500; Frank Ruhl Libre only for the ghosted chapter numerals ── */
+/* Display face for headings: Karantina is condensed, so sizes run ~25% larger than a sans would. */
+.t-hero { font-family: var(--font-display), var(--font-rubik), Arial, sans-serif; font-size: clamp(3.25rem, 1.4rem + 6.6vw, 6.75rem); line-height: 0.95; font-weight: 700; letter-spacing: 0; text-wrap: balance; }
+.t-title { font-family: var(--font-display), var(--font-rubik), Arial, sans-serif; font-size: 2.5rem; line-height: 1; font-weight: 700; letter-spacing: 0; text-wrap: balance; }
+@media (min-width: 768px) { .t-title { font-size: 3.25rem; } }
+.t-card { font-size: 1.25rem; line-height: 1.3; font-weight: 500; letter-spacing: -0.01em; }
+.meta { font-size: 0.875rem; color: var(--text-muted); }
+.eyebrow { font-size: 0.8125rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 10px; letter-spacing: 0.02em; }
+.mark { display: inline-block; width: 7px; height: 7px; background: var(--accent); flex: none; }
+.mark-sun { background: var(--primary); }
+.mark-muted { background: var(--control-border); }
+
+/* Chapter header: ghosted serif numeral, title in Rubik 500 directly beneath (brand) */
+.chapter { display: flex; flex-direction: column; gap: 2px; margin-block-end: 28px; }
+.chapter__num {
+  font-family: var(--font-frank), Georgia, serif; font-weight: 300;
+  font-size: clamp(5rem, 3rem + 6vw, 8.5rem); line-height: 0.8; color: var(--ghost);
+  letter-spacing: -0.02em; text-align: start; unicode-bidi: isolate; user-select: none;
+}
+.chapter .t-title, .chapter .t-card { margin: 0; }
+.section-rule { border-top: 1px solid var(--border-subtle); }
+
+/* ── Surfaces — cards exist only where elevation means something ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: 20px;
+}
+@media (min-width: 768px) { .card { padding: 28px; } }
+.card-raised { background: var(--surface-raised); box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.8); }
+.card-hover { transition: transform var(--ease), border-color var(--ease), background-color var(--ease); }
+.card-hover:hover { transform: translateY(-2px); border-color: var(--control-border); }
+
+/* Tags (formerly pills) — square, hairline */
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 3px 10px; min-height: 26px;
+  font-size: 0.8125rem; font-weight: 400; line-height: 1.4;
+  border: 1px solid var(--border-subtle); background: var(--bg); color: var(--text);
+}
+.pill-primary { border-color: var(--primary); color: var(--primary); }
+.pill-success { border-color: var(--success); color: var(--success); }
+.pill-danger { border-color: var(--danger); color: var(--danger); }
+.pill-accent { border-color: var(--accent); color: var(--accent); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--control-h); padding: 0 22px;
+  border-radius: var(--radius-control);
+  font-weight: 500; font-size: 1rem; text-decoration: none; cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color var(--ease), border-color var(--ease), color var(--ease), opacity var(--ease), transform 120ms ease;
+  white-space: nowrap;
+}
+.btn:not(:disabled):active { transform: translateY(1px); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; }
+.btn-primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.btn-primary:not(:disabled):hover { background: var(--primary-deep); border-color: var(--primary-deep); }
+.btn-secondary { background: transparent; color: var(--text); border-color: var(--control-border); }
+.btn-secondary:not(:disabled):hover { border-color: var(--text); background: rgb(242 240 217 / 0.04); }
+.btn-ghost { background: transparent; color: var(--text-muted); min-height: 40px; padding: 0 12px; font-weight: 400; }
+.btn-ghost:hover { color: var(--text); }
+.btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+.btn-danger:not(:disabled):hover { background: rgb(240 144 127 / 0.08); }
+.btn-sm { min-height: 40px; padding: 0 14px; font-size: 0.9rem; }
+.btn-block { width: 100%; }
+
+/* Header navigation — current page carries a Sun hairline */
+.navlink { position: relative; }
+.navlink[aria-current="page"] { color: var(--text); }
+.navlink[aria-current="page"]::after {
+  content: ""; position: absolute; inset-inline: 12px; bottom: 4px; height: 1px; background: var(--primary);
+}
+
+/* ── Form controls — quiet, stable; the atmosphere stays in the hero ── */
+.label { display: block; font-weight: 500; margin-block-end: 8px; }
+.hint { font-size: 0.875rem; color: var(--text-muted); margin-block-start: 6px; }
+.field {
+  width: 100%; min-height: var(--control-h);
+  padding: 10px 14px;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--control-border); border-radius: var(--radius-control);
+  font: inherit;
+  transition: border-color var(--ease), background-color var(--ease);
+}
+.field::placeholder { color: var(--text-faint); }
+.field:hover { border-color: var(--text-muted); }
+.field:focus-visible { outline: 2px solid var(--primary); outline-offset: 0; border-color: var(--primary); }
+.field[aria-invalid="true"] { border-color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger); }
+textarea.field { min-height: 120px; resize: vertical; }
+select.field { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%); background-position: 18px 50%, 12px 50%; background-size: 6px 6px; background-repeat: no-repeat; padding-inline-end: 40px; }
+.field-error { color: var(--danger); font-size: 0.875rem; margin-block-start: 6px; display: flex; gap: 6px; align-items: center; }
+
+/* Choice cards (department radios, avatar tiles, vote selection) */
+.choice {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: var(--control-h); padding: 8px 16px;
+  border: 1px solid var(--control-border); border-radius: var(--radius-control);
+  background: transparent; cursor: pointer; font-weight: 400;
+  transition: border-color var(--ease), background-color var(--ease), color var(--ease);
+}
+.choice:hover { background: var(--surface-raised); border-color: var(--text-muted); }
+.choice input { position: absolute; opacity: 0; inset: 0; cursor: pointer; margin: 0; }
+.choice:has(input:checked) { border-color: var(--primary); background: rgb(255 242 130 / 0.07); color: var(--text); }
+.choice:has(input:focus-visible) { outline: 2px solid var(--primary); outline-offset: 3px; }
+.choice .check { display: none; color: var(--primary); font-weight: 500; }
+.choice:has(input:checked) .check { display: inline; }
+/* A selected gallery card: Sun hairline frame — shape stays put, ✓ label carries the meaning too */
+.is-selected { outline: 1px solid var(--primary); outline-offset: 4px; }
+
+/* Alerts — full hairline + faint tint; the glyph and wording carry meaning, not only color */
+.alert { border-radius: var(--radius-control); padding: 12px 16px; border: 1px solid; display: flex; gap: 12px; align-items: flex-start; }
+.alert-error { border-color: var(--danger); background: rgb(240 144 127 / 0.06); }
+.alert-success { border-color: var(--success); background: rgb(156 204 154 / 0.06); }
+.alert-info { border-color: var(--border-subtle); background: var(--surface); }
+.alert-warn { border-color: var(--primary); background: rgb(255 242 130 / 0.05); }
+
+/* Tables (admin) — hairlines, no vertical rules */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-control); }
+.table { width: 100%; border-collapse: collapse; font-size: 0.925rem; }
+.table th, .table td { text-align: start; padding: 11px 14px; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+.table th { color: var(--text-muted); font-weight: 400; background: var(--surface); position: sticky; top: 0; border-bottom-color: var(--control-border); }
+.table tbody tr { transition: background-color var(--ease); }
+.table tbody tr:hover { background: rgb(242 240 217 / 0.025); }
+.table tr:last-child td { border-bottom: 0; }
+
+/* Timeline — squares on a hairline; the next date is lit */
+.timeline { position: relative; list-style: none; margin: 0; padding: 0; }
+.timeline li { position: relative; padding-inline-start: 28px; padding-block: 0 26px; }
+.timeline li::before { content: ""; position: absolute; inset-inline-start: 3px; top: 12px; bottom: -8px; width: 1px; background: var(--border-subtle); }
+.timeline li:last-child { padding-block-end: 0; }
+.timeline li:last-child::before { display: none; }
+.timeline__dot { position: absolute; inset-inline-start: 0; top: 8px; width: 7px; height: 7px; background: var(--control-border); }
+.timeline li[data-state="past"] { color: var(--text-muted); }
+.timeline li[data-state="past"] .timeline__dot { background: var(--border-subtle); }
+.timeline li[data-state="next"] .timeline__dot { background: var(--primary); box-shadow: 0 0 0 4px rgb(255 242 130 / 0.12), 0 0 16px 2px rgb(255 242 130 / 0.35); }
+
+/* Countdown — bare numerals, hairline separated */
+.countdown { display: flex; align-items: flex-end; gap: 0; }
+.countdown__cell { padding-inline: 24px; border-inline-start: 1px solid var(--border-subtle); text-align: center; }
+.countdown__cell:first-child { padding-inline-start: 0; border-inline-start: 0; }
+/* Display face, large: the real deadline is the second-loudest thing in the hero after the headline. */
+.countdown__num {
+  direction: ltr; font-family: var(--font-display), var(--font-rubik), Arial, sans-serif; font-weight: 700;
+  font-size: clamp(3.5rem, 2rem + 4vw, 5.5rem); line-height: 0.9; letter-spacing: 0.01em;
+  text-shadow: 0 0 28px rgb(242 240 217 / 0.12);
+}
+.countdown__unit { font-size: 0.9375rem; color: var(--text-muted); margin-top: 10px; }
+.countdown__label { font-size: 1.0625rem; color: var(--text-muted); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px; }
+.countdown__label strong { color: var(--text); font-weight: 500; }
+@media (max-width: 479px) { .countdown__cell { padding-inline: 16px; } }
+
+/* ── Hero: the dark wall. A light follows the pointer and finds what's written on it. ── */
+.hero { position: relative; isolation: isolate; }
+.hero__wall { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; --x: 72%; --y: 48%; --r: 300px; }
+.hero__beam {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle var(--r) at var(--x) var(--y), rgb(242 240 217 / 0.075) 0%, rgb(242 240 217 / 0.025) 45%, transparent 100%);
+}
+.hero__writing {
+  position: absolute; inset: 0;
+  -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgb(0 0 0 / 0.5) 42%, transparent 100%);
+  mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgb(0 0 0 / 0.5) 42%, transparent 100%);
+}
+.hero__note {
+  position: absolute; left: var(--nx); top: var(--ny); transform: translateX(-50%) rotate(var(--nr));
+  max-width: 230px; text-align: center; text-wrap: balance;
+  font-size: 1rem; line-height: 1.35; color: #c9c4a6;
+}
+@media (max-width: 767px) {
+  .hero__wall { --x: 50%; --y: 80%; --r: 220px; }  /* static light rests on the mascot */
+  .hero__note { left: var(--mx); top: var(--my); font-size: 0.875rem; max-width: 160px; }
+  .hero__note:not([data-mobile]) { display: none; }
+}
+.hero__vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.55) 100%);
+}
+
+.sticky-vote-bar {
+  position: sticky; bottom: 0; z-index: 20;
+  padding-block: 12px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+}
+
+/* Skeleton loading */
+@keyframes skeleton { 0%, 100% { opacity: 0.45; } 50% { opacity: 0.8; } }
+.skeleton { background: var(--surface); border: 1px solid var(--border-subtle); animation: skeleton 1.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; }
+  .card-hover:hover { transform: none; }
+}
+
+/* ── Halloween mascot (docs/MASCOT_INTEGRATION.md) ── */
+.mascot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mascot__stage {
+  position: relative;
+  /* Height drives size; width follows the 2:3 ratio. Room for glow + shadow, no clipping. */
+  height: var(--mascot-h);
+  aspect-ratio: 2 / 3;
+  padding-block-end: 24px;
+  box-sizing: content-box;
+}
+.mascot__img { display: block; height: 100%; width: auto; aspect-ratio: 2 / 3; object-fit: contain; }
+.mascot__entry, .mascot__ambient { height: 100%; position: relative; z-index: 1; }
+.mascot__ambient { transform-origin: 48% 95%; }
+.mascot__glow {
+  position: absolute; z-index: 0; pointer-events: none;
+  inset: 8% -30% 12% -30%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(232 116 44 / 0.9), rgb(120 40 10 / 0.45) 55%, transparent 100%);
+  opacity: 0.2;
+  filter: blur(12px);
+}
+.mascot__shadow {
+  position: absolute; z-index: 0; pointer-events: none;
+  /* Under the foot: ~48% of image width, ~96% of image height */
+  left: 48%; top: calc(var(--mascot-h) * 0.96);
+  width: 46%; height: calc(var(--mascot-h) * 0.05);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.75), transparent);
+  opacity: 0.8;
+}
+.mascot__toggle { font-size: 0.8rem; min-height: 36px; color: var(--text-muted); }
+
+/* Sizes per variant and breakpoint — shrink, never crop */
+.mascot--hero { --mascot-h: clamp(260px, 42vh, 340px); }
+@media (min-width: 768px) { .mascot--hero { --mascot-h: clamp(380px, 60vh, 480px); } }
+@media (min-width: 1024px) { .mascot--hero { --mascot-h: clamp(420px, calc(100vh - 220px), 620px); } }
+.mascot--companion { --mascot-h: clamp(280px, 50vh, 360px); }
+.mascot--success { --mascot-h: 200px; }
+@media (min-width: 768px) { .mascot--success { --mascot-h: 240px; } }
+.mascot--empty { --mascot-h: 150px; }
+.mascot--results { --mascot-h: clamp(240px, 40vh, 360px); }
+
+/* Motion */
+@keyframes mascot-entry { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes mascot-sway {
+  0%, 100% { transform: rotate(-0.35deg) scaleY(1); }
+  50% { transform: rotate(0.35deg) scaleY(1.006); }
+}
+@keyframes mascot-glow {
+  0%, 100% { opacity: 0.16; transform: scale(0.98); }
+  50% { opacity: 0.24; transform: scale(1.02); }
+}
+@keyframes mascot-glow-pulse {
+  0% { opacity: 0.18; transform: scale(0.98); }
+  45% { opacity: 0.34; transform: scale(1.04); }
+  100% { opacity: 0.2; transform: scale(1); }
+}
+.mascot[data-motion="ambient"] .mascot__entry,
+.mascot[data-motion="once"] .mascot__entry { animation: mascot-entry 550ms ease-out both; }
+.mascot[data-motion="ambient"] .mascot__ambient { animation: mascot-sway 7s ease-in-out infinite; }
+.mascot[data-motion="ambient"] .mascot__glow { animation: mascot-glow 6s ease-in-out infinite; }
+.mascot[data-motion="once"] .mascot__glow { animation: mascot-glow-pulse 700ms ease-out 1 both; }
+.mascot[data-paused] .mascot__ambient,
+.mascot[data-paused] .mascot__glow { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot .mascot__entry, .mascot .mascot__ambient, .mascot .mascot__glow { animation: none !important; }
+  .mascot__toggle { display: none; }
+}
+
+/* Hero: explicit grid areas — mascot on the visual right, text on the left (right-aligned).
+   DOM order stays text-first. */
+.hero-grid { display: grid; gap: 24px; grid-template-areas: "text" "mascot"; align-items: center; }
+.hero-grid > .hero-text { grid-area: text; }
+.hero-grid > .hero-mascot { grid-area: mascot; justify-self: center; }
+@media (min-width: 768px) {
+  /* direction:ltr pins the physical order: text column left, mascot column right. */
+  .hero-grid { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); grid-template-areas: "text mascot"; column-gap: 40px; direction: ltr; }
+  .hero-grid > * { direction: rtl; }
+  .hero-grid > .hero-text { text-align: right; }
+  /* Pin both columns to the top: opening the "how it works" expander grows the text column,
+     and the mascot should stay beside the headline (sticky) instead of drifting to the middle. */
+  .hero-grid { align-items: start; }
+  .hero-grid > .hero-mascot { position: sticky; top: 96px; }
+}
+
+/* ── Avatars (assets/avatars/source/README.md): round 1:1, cover, centred, no extra zoom ── */
+.avatar {
+  aspect-ratio: 1 / 1;
+  border-radius: 50% !important; /* the one exception to the global sharp corners (avatar package) */
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 0 0 1px var(--border-subtle);
+}
+/* Picker: 88px, 64px on phones; in a narrow container it shrinks but always stays a circle. */
+.avatar-pick { max-width: 100%; height: auto !important; aspect-ratio: 1 / 1; }
+@media (max-width: 639px) {
+  .avatar-pick { width: min(64px, 100%) !important; }
+}
+.choice .avatar { transition: box-shadow var(--ease); }
+.choice:hover .avatar { box-shadow: 0 0 0 1px var(--control-border); }
+
+/* ── Hero headline: fluorescent flicker → fade to black → re-ignite, plus pointer flashlight ── */
+.headline { position: relative; --hx: -999px; --hy: -999px; }
+.headline__tube { display: block; }
+.headline__torch {
+  position: absolute; inset: 0; display: block; pointer-events: none;
+  color: transparent; -webkit-text-fill-color: transparent;
+  background: radial-gradient(circle 170px at var(--hx) var(--hy), #fffbe6 0%, rgb(242 240 217 / 0.75) 30%, rgb(242 240 217 / 0.18) 58%, transparent 72%);
+  -webkit-background-clip: text; background-clip: text;
+  opacity: 0; transition: opacity 220ms ease;
+}
+.headline[data-torch="on"] .headline__torch { opacity: 1; }
+
+/*
+ * 10s cycle (1% = 100ms). Paired stops 0.1% apart are instant switches.
+ * Ignite 0.2–0.76s · steady · flicker 5.2–6.56s · fade 6.56–7.6s · dark 7.6–10s.
+ * Every 1s window contains ≤3 flashes (on→off→on), per WCAG 2.3.1.
+ */
+@keyframes headline-tube {
+  0%, 2% { opacity: 0; text-shadow: none; }
+  2.1%, 4% { opacity: 0.85; text-shadow: 0 0 22px rgb(225 255 240 / 0.28); }
+  4.1%, 7.5% { opacity: 0.06; text-shadow: none; }
+  7.6% { opacity: 1; text-shadow: 0 0 24px rgb(225 255 240 / 0.3); }
+  30% { opacity: 1; }
+  31% { opacity: 0.93; }
+  32% { opacity: 1; }
+  52% { opacity: 1; text-shadow: 0 0 24px rgb(225 255 240 / 0.3); }
+  52.1%, 55% { opacity: 0.1; text-shadow: none; }
+  55.1%, 59% { opacity: 1; text-shadow: 0 0 24px rgb(225 255 240 / 0.3); }
+  59.1%, 61% { opacity: 0.15; text-shadow: none; }
+  61.1%, 64% { opacity: 0.9; text-shadow: 0 0 20px rgb(225 255 240 / 0.24); }
+  64.1%, 65.5% { opacity: 0.05; text-shadow: none; }
+  65.6% { opacity: 0.7; text-shadow: 0 0 16px rgb(225 255 240 / 0.18); }
+  76%, 100% { opacity: 0; text-shadow: none; }
+}
+.headline[data-motion="loop"] .headline__tube { animation: headline-tube 10s linear infinite; }
+.headline[data-paused] .headline__tube { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .headline .headline__tube { animation: none !important; opacity: 1; }
+}
+
+
+/* ── Hero "how it works" expander ── */
+.howto__summary {
+  display: inline-flex; align-items: center; gap: 10px; cursor: pointer; list-style: none;
+  min-height: 44px; color: var(--text); font-weight: 500;
+  border-bottom: 1px solid var(--control-border); transition: border-color var(--ease);
+}
+.howto__summary::-webkit-details-marker { display: none; }
+.howto__summary::after { content: "+"; color: var(--primary); font-size: 1.25rem; line-height: 1; }
+.howto[open] .howto__summary::after { content: "−"; }
+.howto__summary:hover { border-color: var(--primary); }
+.howto__body { padding-top: 20px; display: grid; gap: 14px; color: var(--text-muted); }
+.howto__body strong { color: var(--text); font-weight: 500; }
+.howto__steps { list-style: none; padding: 0; margin: 0; counter-reset: step; display: grid; gap: 12px; }
+/* Number sits in the inline-start gutter; the step text flows as one normal paragraph. */
+.howto__steps li { counter-increment: step; position: relative; padding-inline-start: 36px; }
+.howto__steps li::before { content: counter(step, decimal-leading-zero); position: absolute; inset-inline-start: 0; top: 0; font-family: var(--font-display), var(--font-rubik), sans-serif; font-weight: 700; color: var(--primary); font-size: 1.125rem; line-height: 1.5; }
+.howto__h { color: var(--text); font-weight: 500; font-size: 1rem; margin-top: 8px; }
+.howto__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.howto__list li { position: relative; padding-inline-start: 18px; }
+.howto__list li::before { content: ""; position: absolute; inset-inline-start: 0; top: 0.7em; width: 6px; height: 6px; background: var(--control-border); }
+.howto__tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.howto__tags li { border: 1px solid var(--border-subtle); padding: 4px 12px; font-size: 0.875rem; color: var(--text); }
+
+
+
+
+

@@ -1,0 +1,85 @@
+{
+  "version": 2,
+  "status": "artwork-included",
+  "notes": "Eight generated raster portraits. Opaque square backgrounds; render as circles with CSS. Preserve stable IDs. Fallback only on image loading failure.",
+  "avatars": [
+    {
+      "id": "frankenstein",
+      "labelHe": "פרנקנשטיין",
+      "publicPath": "/avatars/frankenstein.png",
+      "enabled": true,
+      "file": "frankenstein.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "vampire",
+      "labelHe": "ערפד",
+      "publicPath": "/avatars/vampire.png",
+      "enabled": true,
+      "file": "vampire.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "pumpkin",
+      "labelHe": "ראש דלעת",
+      "publicPath": "/avatars/pumpkin.png",
+      "enabled": true,
+      "file": "pumpkin.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "skeleton",
+      "labelHe": "שלד",
+      "publicPath": "/avatars/skeleton.png",
+      "enabled": true,
+      "file": "skeleton.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "witch",
+      "labelHe": "מכשפה",
+      "publicPath": "/avatars/witch.png",
+      "enabled": true,
+      "file": "witch.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "mummy",
+      "labelHe": "מומיה",
+      "publicPath": "/avatars/mummy.png",
+      "enabled": true,
+      "file": "mummy.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "ghost",
+      "labelHe": "רוח רפאים",
+      "publicPath": "/avatars/ghost.png",
+      "enabled": true,
+      "file": "ghost.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "werewolf",
+      "labelHe": "איש זאב",
+      "publicPath": "/avatars/werewolf.png",
+      "enabled": true,
+      "file": "werewolf.png",
+      "width": 1254,
+      "height": 1254
+    }
+  ],
+  "rendering": {
+    "aspectRatio": "1 / 1",
+    "objectFit": "cover",
+    "objectPosition": "center",
+    "borderRadius": "50%"
+  }
+}
