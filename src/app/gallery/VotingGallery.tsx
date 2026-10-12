@@ -77,12 +77,12 @@ export function VotingGallery({
                 d={it}
                 href={`/gallery/${it.id}`}
                 footer={
-                  <div className="flex flex-col gap-3 pt-3 border-t border-[var(--border-subtle)]">
-                    <Link href={`/gallery/${it.id}`} className="btn btn-secondary btn-sm self-start">
+                  <div className="flex items-stretch gap-2 pt-3 border-t border-[var(--border-subtle)]">
+                    <Link href={`/gallery/${it.id}`} className="btn btn-secondary btn-sm shrink-0">
                       צפייה בתוצר
                     </Link>
                     {round && (
-                      <label className={`choice w-full ${disabled ? "opacity-50 !cursor-not-allowed" : ""}`}>
+                      <label className={`choice choice-primary flex-1 min-w-0 ${disabled ? "opacity-50 !cursor-not-allowed" : ""}`}>
                         <input
                           type={single ? "radio" : "checkbox"}
                           name="vote"

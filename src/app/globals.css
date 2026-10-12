@@ -206,6 +206,11 @@ select.field { appearance: none; background-image: linear-gradient(45deg, transp
 .choice:has(input:focus-visible) { outline: 2px solid var(--primary); outline-offset: 3px; }
 .choice .check { display: none; color: var(--primary); font-weight: 500; }
 .choice:has(input:checked) .check { display: inline; }
+/* Vote button on gallery cards: Sun fill, same height as .btn-sm beside it */
+.choice-primary { min-height: 40px; padding: 4px 12px; font-size: 0.9rem; font-weight: 500; text-align: center; background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.choice-primary:hover { background: var(--primary-deep); border-color: var(--primary-deep); }
+.choice-primary:has(input:checked) { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.choice-primary .check { color: var(--on-primary); }
 /* A selected gallery card: Sun hairline frame — shape stays put, ✓ label carries the meaning too */
 .is-selected { outline: 1px solid var(--primary); outline-offset: 4px; }
 
@@ -525,6 +530,7 @@ select.field { appearance: none; background-image: linear-gradient(45deg, transp
   .hero-video__controls { position: absolute; left: var(--gutter); bottom: 20px; margin: 0; z-index: 2; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-video__video { display: none; } }
+
 
 
 
