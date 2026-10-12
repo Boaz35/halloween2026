@@ -23,17 +23,35 @@ export function RegistrationPanel({
   const [cState, cAction] = useSafeActionState(canCancel ? cancelRegistrationAction : withdrawSelfAction);
   return (
     <div className="card space-y-4">
-      <div className="flex flex-wrap items-center gap-4">
-        <Avatar id={reg.avatarId} size={64} />
+      <div className="flex items-center gap-4">
+        <div className="relative shrink-0">
+          <Avatar id={reg.avatarId} size={64} />
+          <button
+            type="button"
+            className="avatar-edit"
+            onClick={() => setEditing((e) => !e)}
+            aria-expanded={editing}
+            aria-label={editing ? "סגירת עריכת הפרטים" : "עריכת פרטים"}
+            title={editing ? "סגירה" : "עריכת פרטים"}
+          >
+            {editing ? (
+              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 20h4L19 9l-4-4L4 16v4z" />
+                <path d="M13.5 6.5l4 4" />
+              </svg>
+            )}
+          </button>
+        </div>
         <div className="min-w-0">
           <div className="t-card">{reg.fullName}</div>
           <div className="meta">
             <span className="ltr">{departmentLabel(reg.department)}</span> · <span className="ltr break-all">{email}</span>
           </div>
         </div>
-        <button className="btn btn-ghost ms-auto" onClick={() => setEditing((e) => !e)} aria-expanded={editing}>
-          {editing ? "סגירה" : "עריכת פרטים"}
-        </button>
       </div>
       {editing && (
         <form action={action} className="space-y-5 pt-4 border-t border-[var(--border-subtle)]" noValidate>

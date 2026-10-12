@@ -400,6 +400,16 @@ select.field { appearance: none; background-image: linear-gradient(45deg, transp
 @media (max-width: 639px) {
   .avatar-pick { width: min(64px, 100%) !important; }
 }
+/* Round edit button pinned to an avatar's lower corner (profile card on /me) */
+.avatar-edit {
+  position: absolute; inset-inline-end: -4px; bottom: -4px;
+  display: grid; place-items: center; width: 28px; height: 28px;
+  border-radius: 50% !important; border: 2px solid var(--surface);
+  background: var(--primary); color: var(--on-primary); cursor: pointer;
+  transition: background-color var(--ease);
+}
+.avatar-edit:hover { background: var(--primary-deep); }
+.avatar-edit:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .choice .avatar { transition: box-shadow var(--ease); }
 .choice:hover .avatar { box-shadow: 0 0 0 1px var(--control-border); }
 
@@ -530,6 +540,8 @@ select.field { appearance: none; background-image: linear-gradient(45deg, transp
   .hero-video__controls { position: absolute; left: var(--gutter); bottom: 20px; margin: 0; z-index: 2; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-video__video { display: none; } }
+
+
 
 
 
