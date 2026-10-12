@@ -1,7 +1,6 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "web", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 3000 },
-    { "name": "web-rehearsal", "runtimeExecutable": "/usr/bin/env", "runtimeArgs": ["DEV_FAKE_NOW=2026-10-26T07:00:00Z", "npm", "run", "dev"], "port": 3000 }
+    { "name": "web", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 3000 }
   ]
 }
