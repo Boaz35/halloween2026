@@ -9,8 +9,12 @@ import { metrics } from "@/server/admin";
 import { serverNow } from "@/server/clock";
 import { getOverview } from "@/server/overview";
 import { planNextRound } from "@/server/voting";
+import { requireOrganizerPage } from "@/server/session";
 
 export default async function AdminHome() {
+  // Each admin page checks on its own: Next renders layout and page in parallel, so the
+  // layout's check alone does not stop this page's data from reaching the response.
+  await requireOrganizerPage();
   const db = await getDb();
   const now = serverNow();
   const o = await getOverview(db, now);

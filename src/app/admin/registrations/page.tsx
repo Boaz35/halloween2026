@@ -9,8 +9,12 @@ import { listRegistrations } from "@/server/admin";
 import { serverNow } from "@/server/clock";
 import { getCompetition } from "@/server/competition";
 import { REVIEW_LABELS } from "@/server/submission";
+import { requireOrganizerPage } from "@/server/session";
 
 export default async function RegistrationsAdmin() {
+  // Each admin page checks on its own: Next renders layout and page in parallel, so the
+  // layout's check alone does not stop this page's data from reaching the response.
+  await requireOrganizerPage();
   const db = await getDb();
   const c = await getCompetition(db);
   const rows = await listRegistrations(db, c.id);
