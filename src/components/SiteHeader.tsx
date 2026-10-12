@@ -4,6 +4,7 @@ import { COMPETITION_NAME } from "@/config/competition";
 import { getViewer } from "@/server/session";
 import { isActive } from "@/server/registration";
 import { Avatar } from "./Avatar";
+import { MobileMenu } from "./MobileMenu";
 import { NavLinks } from "./NavLinks";
 
 export async function SiteHeader() {
@@ -44,10 +45,7 @@ export async function SiteHeader() {
                   יציאה
                 </button>
               </form>
-              <details className="md:hidden relative">
-                <summary className="btn btn-secondary btn-sm list-none cursor-pointer" aria-label="תפריט">
-                  תפריט
-                </summary>
+              <MobileMenu>
                 <div className="absolute end-0 mt-2 w-60 card card-raised !p-2 flex flex-col">
                   <span className="meta px-3 py-2 ltr text-start">{v.user.email}</span>
                   <NavLinks links={links} className="btn btn-ghost navlink justify-start" />
@@ -57,7 +55,7 @@ export async function SiteHeader() {
                     </button>
                   </form>
                 </div>
-              </details>
+              </MobileMenu>
             </>
           )}
         </div>
