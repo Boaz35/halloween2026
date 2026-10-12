@@ -124,3 +124,13 @@ npm run dev:seed      # פיתוח בלבד: 12 נרשמים ו־7 תוצרים
 - **מקור חדש:** `test_Seedance 2.5_2026-10-12_08-58-11.mp4` (HEVC, 1918×1080, 10 שניות, ללא קול). מוקלד ל־1920×1080 עם אותו crossfade של 0.75 שניות (לולאה של 9.3 שניות).
 - **קבצים:** `hero-loop.webm` (VP9 crf 36, כ־2.2MB), `hero-loop.mp4` (H.264 crf 25, כ־2.4MB), `hero-loop-poster.jpg` (כ־160KB). אותם שמות קבצים, ולכן אין שינוי בקוד מלבד מידות ה־poster.
 - **ידוע:** בשנייה ~5.3 הפלמינגו מזנק לעבר המצלמה, והכנף הימנית עוברת מאחורי הכותרת. היא מוצללת, והטקסט קריא.
+
+## Supabase, מארגן נוסף והכנה ל־Vercel (12.10.2026)
+
+- **Supabase** (`dsdiepxisescwjmiguoh`, ap-southeast-2, PostgreSQL 17): מיגרציות 0000–0002 הורצו דרך Session pooler (`DIRECT_URL` ב־`.env.local`). 15 טבלאות, RLS פעיל בכולן (0002) כדי שה־Data API לא יחשוף נתונים. ה־seed הוחל עם `scripts/seed-remote.ts`: שורת התחרות ושתי הרשאות מארגן, שטרם נקשרו.
+- **מארגנים:** `ORGANIZER_EMAILS` בקוד (`src/config/competition.ts`): yuval.b (C02) ו־boaz.b (C18, החלטת בעלים). ה־seed מוסיף הרשאה חסרה פעם אחת עם audit, ולא מחזיר הרשאה שנשללה (נבדק). `BOOTSTRAP_ORGANIZER_EMAIL` הוסר מה־env.
+- **התאמות ל־Vercel:**
+  - תמונת שער עד 4MB ו־`bodySizeLimit: 4.5mb`, כי Vercel מגביל גוף בקשה ל־4.5MB.
+  - pool של 3 חיבורים כש־`VERCEL` מוגדר.
+  - `vercel.json` עם `regions: ["syd1"]`: הפונקציות רצות ליד מסד הנתונים בסידני. כל עמוד מריץ כמה שאילתות ברצף, וזה חוסך round-trip בין יבשות לכל שאילתה.
+- **בדיקות:** 48 עוברות, build תקין.

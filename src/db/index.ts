@@ -10,7 +10,10 @@ const MIGRATIONS = path.join(process.cwd(), "drizzle");
 async function connectPostgres(url: string): Promise<DB> {
   const { default: postgres } = await import("postgres");
   const { drizzle } = await import("drizzle-orm/postgres-js");
-  const client = postgres(url, { max: Number(process.env.DATABASE_POOL_MAX || 10), prepare: false });
+  // Serverless (Vercel): many short-lived instances each hold a pool — keep it small.
+  // prepare:false works with Supabase's transaction pooler (port 6543).
+  const max = Number(process.env.DATABASE_POOL_MAX || (process.env.VERCEL ? 3 : 10));
+  const client = postgres(url, { max, prepare: false });
   const db = drizzle(client, { schema });
   if (process.env.DATABASE_AUTO_MIGRATE === "true") {
     const { migrate } = await import("drizzle-orm/postgres-js/migrator");

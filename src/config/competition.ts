@@ -9,8 +9,13 @@ export const TIME_ZONE = "Asia/Jerusalem";
 /** C01 — the single Google Workspace domain, matched exactly against the verified hd claim. */
 export const ALLOWED_DOMAIN = (process.env.ALLOWED_GOOGLE_DOMAIN || "zemingo.com").trim().toLowerCase();
 
-/** C02 — the bootstrap organizer, bound to the verified Google identity on first sign-in. */
-export const BOOTSTRAP_ORGANIZER_EMAIL = (process.env.BOOTSTRAP_ORGANIZER_EMAIL || "yuval.b@zemingo.com").trim().toLowerCase();
+/**
+ * Organizer grants, each bound to its verified Google identity on first sign-in.
+ * C02: yuval.b@zemingo.com. Owner decision 12.10.2026: boaz.b@zemingo.com added.
+ * Kept in code (not env) so every change is reviewed and versioned; seeding only ever adds
+ * missing grants (audited) and never revokes.
+ */
+export const ORGANIZER_EMAILS: readonly string[] = ["yuval.b@zemingo.com", "boaz.b@zemingo.com"];
 
 /** Schedule as Asia/Jerusalem wall-clock. Confirmed dates are read-only in the UI; only the P01 close instant is adjustable on 14.10. */
 export const DEFAULT_SCHEDULE = {
@@ -89,6 +94,6 @@ export function submissionTypeLabel(id: string | null | undefined, other?: strin
   return SUBMISSION_TYPES.find((t) => t.id === id)?.label ?? "—";
 }
 
-/** TECHNICAL_SPEC §7 proposal: 5 MiB, JPEG/PNG/WebP */
-export const COVER_MAX_BYTES = 5 * 1024 * 1024;
+/** JPEG/PNG/WebP up to 4 MiB — under Vercel's 4.5 MB request-body limit (TECHNICAL_SPEC §7 proposed 5 MiB). */
+export const COVER_MAX_BYTES = 4 * 1024 * 1024;
 export const COVER_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;

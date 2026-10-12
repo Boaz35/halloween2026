@@ -59,7 +59,7 @@ export const organizerRoles = pgTable("organizer_roles", {
   email: text("email").notNull().unique(),
   userId: uuid("user_id").references(() => users.id).unique(),
   grantedAt: ts("granted_at").notNull().defaultNow(),
-  /** "bootstrap" (BOOTSTRAP_ORGANIZER_EMAIL) or the granting organizer's user id */
+  /** "bootstrap" (ORGANIZER_EMAILS in src/config/competition.ts) or the granting organizer's user id */
   grantedBy: text("granted_by").notNull().default("bootstrap"),
   boundAt: ts("bound_at"),
   revokedAt: ts("revoked_at"),

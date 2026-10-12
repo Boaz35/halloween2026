@@ -192,7 +192,7 @@ export function SubmissionForm({
             }}
           />
           <p id="cover-hint" className="hint">
-            JPG / PNG / WebP עד 5MB, יחס 16:9 מומלץ. התמונה נשמרת בלחיצה על שמירה או הגשה.
+            JPG / PNG / WebP עד 4MB, יחס 16:9 מומלץ. התמונה נשמרת בלחיצה על שמירה או הגשה.
           </p>
           <FieldError id="coverMediaId-err" msg={fe.coverMediaId} />
         </fieldset>

@@ -119,3 +119,16 @@
 - אין לייבא נתוני פיתוח: `.data/` (PGlite) ו־`npm run dev:seed` הם מקומיים בלבד.
 - בדיקת עשן אחרי פריסה: כניסה עם חשבון @zemingo.com → עמוד הצטרפות; Gmail פרטי → "החשבון אינו מורשה"; עובד רגיל ב־`/admin` → "אין הרשאה"; yuval.b@zemingo.com רואה "ניהול"; בדשבורד מוצג "סגירת הרשמה: סוף יום ד׳ 14.10.2026".
 - פירוט מלא של משתני הסביבה והסטיות: [IMPLEMENTATION_LOG.md](IMPLEMENTATION_LOG.md).
+
+## פריסה ל־Vercel (מימוש בריפו הזה)
+
+1. Vercel → Add New → Project → Import את `Boaz35/halloween2026`. Framework: Next.js; שאר ההגדרות כברירת מחדל. ה־Production Branch הוא `main`.
+2. Environment Variables (Production):
+   - `DATABASE_URL`: מחרוזת **Transaction pooler** של Supabase (פורט 6543) עם הסיסמה.
+   - `AUTH_SECRET`: מחרוזת אקראית (`openssl rand -base64 33`).
+   - `APP_ORIGIN`: `https://<project>.vercel.app` (או הדומיין הקבוע).
+   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: מ־Google Cloud. בלעדיהם האתר עולה, אבל אי אפשר להתחבר.
+   - **לא** להגדיר `DEV_LOGIN_ENABLED` או `DEV_FAKE_NOW`.
+3. Deploy. אזור הפונקציות נקבע ל־`syd1` ב־`vercel.json`, ליד מסד הנתונים.
+4. ב־Google Cloud → Credentials → OAuth client: להוסיף Authorized redirect URI `https://<domain>/api/auth/callback/google`.
+5. מיגרציות עתידיות: `npx tsx --env-file=.env.local scripts/migrate.ts` (משתמש ב־`DIRECT_URL`). Vercel לא מריץ מיגרציות בפריסה.

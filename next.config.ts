@@ -16,7 +16,8 @@ const nextConfig: NextConfig = {
     },
   },
   experimental: {
-    serverActions: { bodySizeLimit: "4mb" },
+    // Vercel caps request bodies at 4.5 MB; covers are limited to 4 MB (+ form fields).
+    serverActions: { bodySizeLimit: "4.5mb" },
     authInterrupts: true,
   },
 };

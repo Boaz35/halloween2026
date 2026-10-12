@@ -23,6 +23,7 @@ Updated: 2026-10-11. Product owner: the requesting user; organizational administ
 | C15 | Required user-entered full name, department (Studio/R&D/Strategy), and catalog avatar |
 | C16 | Halloween avatar characters will use the supplied flat portrait reference as style guidance; final graphics are deferred |
 | C17 | Start building now with temporary visuals; graphic design continues separately and must not block implementation |
+| C18 | 2026-10-12 owner decision: boaz.b@zemingo.com is an additional organizer (alongside C02) |
 
 Confirmed update: the user requested design instructions based on the supplied references and the Zemingo flamingo/zebra identity. Implement the concrete proposal in DESIGN.md; exact visual values are design recommendations. Only final artwork remains deferred.
 

@@ -16,7 +16,7 @@ export function sniffImageMime(b: Uint8Array): string | null {
 
 export function validateCover(bytes: Uint8Array): string {
   if (bytes.length === 0) throw new AppError("לא נבחר קובץ.");
-  if (bytes.length > COVER_MAX_BYTES) throw new AppError("התמונה גדולה מדי (עד 5MB).");
+  if (bytes.length > COVER_MAX_BYTES) throw new AppError("התמונה גדולה מדי (עד 4MB).");
   const mime = sniffImageMime(bytes);
   if (!mime) throw new AppError("סוג קובץ לא נתמך. אפשר להעלות JPG, PNG או WebP.");
   return mime;

@@ -10,7 +10,7 @@ import { seed } from "@/db/seed";
 import { ensureRegistrationSnapshot, recordPrelimOverride } from "@/server/competition";
 import { cancelRegistration, register, withdraw } from "@/server/registration";
 import { grantLateEdit, reviewSubmission } from "@/server/submission";
-import { chooseViewOnly } from "@/server/users";
+import { chooseViewOnly, isOrganizer } from "@/server/users";
 import {
   castBallot,
   closeRound,
@@ -111,13 +111,22 @@ describe("Release 1 registration", () => {
     expect((await db.select().from(registrations)).length).toBe(2);
   });
 
-  it("C02: one audited bootstrap organizer grant; re-seeding adds nothing", async () => {
+  it("C02 + owner decision: one audited grant per configured organizer; re-seeding adds nothing", async () => {
     const db = await makeDb();
     await seed(db);
     await seed(db);
-    expect((await db.select().from(organizerRoles)).length).toBe(1);
+    const roles = await db.select().from(organizerRoles);
+    expect(roles.map((r) => r.email).sort()).toEqual(["boaz.b@zemingo.com", "yuval.b@zemingo.com"]);
     const grants = await db.select().from(auditEvents).where(eq(auditEvents.action, "organizer.bootstrap_granted"));
-    expect(grants.length).toBe(1);
+    expect(grants.length).toBe(2);
+  });
+
+  it("organizer grants are not re-created after revocation", async () => {
+    const db = await makeDb();
+    await db.update(organizerRoles).set({ revokedAt: T.regOpen }).where(eq(organizerRoles.email, "boaz.b@zemingo.com"));
+    await seed(db);
+    const boaz = await makeUser(db, "boaz.b@zemingo.com");
+    expect(await isOrganizer(db, boaz.id)).toBe(false);
   });
 });
 

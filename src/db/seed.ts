@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
 import {
   ADVANCE_COUNT,
-  BOOTSTRAP_ORGANIZER_EMAIL,
   COMPETITION_ID,
   COMPETITION_NAME,
   DEFAULT_SCHEDULE,
+  ORGANIZER_EMAILS,
   PRELIM_THRESHOLD,
   RULES_VERSION,
   TIME_ZONE,
@@ -32,13 +32,12 @@ export async function seed(db: DB) {
       })
       .onConflictDoNothing();
   }
-  // C02: exactly one bootstrap grant, created once and audited. It binds to the verified identity
-  // on first sign-in (users.ts). Changing the env later never silently grants or revokes anyone.
-  const existingGrants = await db.select({ id: organizerRoles.id }).from(organizerRoles);
-  if (existingGrants.length === 0) {
+  // Organizer grants from code (C02 + owner decisions): add any missing grant once, audited.
+  // Existing grants (bound, unbound or revoked) are left untouched — seeding never re-grants or revokes.
+  for (const email of ORGANIZER_EMAILS) {
     const granted = await db
       .insert(organizerRoles)
-      .values({ email: BOOTSTRAP_ORGANIZER_EMAIL, grantedBy: "bootstrap", note: "bootstrap organizer (C02)" })
+      .values({ email, grantedBy: "bootstrap", note: "organizer from src/config/competition.ts" })
       .onConflictDoNothing()
       .returning({ id: organizerRoles.id });
     if (granted.length > 0) {
@@ -46,7 +45,7 @@ export async function seed(db: DB) {
         action: "organizer.bootstrap_granted",
         entityType: "organizer_role",
         entityId: granted[0].id,
-        details: { email: BOOTSTRAP_ORGANIZER_EMAIL },
+        details: { email },
       });
     }
   }
