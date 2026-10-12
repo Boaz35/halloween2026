@@ -71,8 +71,12 @@ export function HeroVideo() {
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
   const soundOff = useSyncExternalStore(subscribeSound, readSoundOff, () => false);
-  // True once the page has had a user activation, so the browser allows audio.
-  const [activated, setActivated] = useState(false);
+  // True once the page has had a user activation, so the browser allows audio. Client-side
+  // navigation keeps the document, so returning to the home page after an earlier click in this
+  // visit starts with sound (sticky activation). A full reload needs a fresh interaction.
+  const [activated, setActivated] = useState(
+    () => typeof navigator !== "undefined" && !!(navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive,
+  );
   const audible = activated && !soundOff;
   const paused = userPaused || offscreen || hidden;
   const useVideo = !reduced && !failed;
@@ -96,7 +100,15 @@ export function HeroVideo() {
     const v = videoRef.current;
     if (!v || !useVideo) return;
     if (paused) v.pause();
-    else v.play().catch(() => setPlaying(false)); // autoplay blocked → poster stays
+    else
+      v.play().catch(() => {
+        // Unmuted start refused → fall back to muted playback; refused even muted → poster stays.
+        if (!v.muted) {
+          v.muted = true;
+          setActivated(false);
+          v.play().catch(() => setPlaying(false));
+        } else setPlaying(false);
+      });
   }, [paused, useVideo]);
 
   // First interaction anywhere unlocks audio. Must unmute synchronously inside the event handler
@@ -153,7 +165,7 @@ export function HeroVideo() {
           <video
             ref={videoRef}
             className="hero-video__media hero-video__video"
-            muted
+            muted={!audible}
             loop
             playsInline
             preload="auto"
