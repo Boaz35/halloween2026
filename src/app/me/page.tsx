@@ -26,6 +26,36 @@ export default async function MyPage({ searchParams }: PageProps<"/me">) {
   const coverSrc = s?.draft?.coverMediaId ? `/api/media/${s.draft.coverMediaId}` : null;
   const status = submissionStatus(s);
 
+  const header = (
+    <div>
+      <h1 className="t-title mb-2">התוצר שלי</h1>
+      <div className="flex flex-wrap items-center gap-3">
+        <span className={`pill ${status.cls}`}>
+          <span aria-hidden>{status.icon}</span> {status.label}
+        </span>
+        {s?.submittedAt && <span className="meta">הוגש לאחרונה: {formatDateTime(s.submittedAt, TIME_ZONE)}</span>}
+        {s?.submittedAt && s.draftUpdatedAt > s.submittedAt && editable && (
+          <span className="pill pill-primary">יש שינויים שנשמרו כטיוטה וטרם הוגשו</span>
+        )}
+      </div>
+      {s?.reviewNote && (s.reviewStatus === "needs_fix" || s.reviewStatus === "disqualified") && (
+        <div className="alert alert-warn mt-4">
+          <span aria-hidden>!</span>
+          <div>
+            <strong>משוב מהמארגנים:</strong> {s.reviewNote}
+          </div>
+        </div>
+      )}
+      {s?.lateEditUntil && now < s.lateEditUntil && (
+        <div className="alert alert-info mt-4">
+          <span aria-hidden>ℹ</span>
+          <span>נפתח לך חלון תיקון חריג עד {formatDateTime(s.lateEditUntil, TIME_ZONE)}. יש להגיש מחדש לאחר התיקון.</span>
+        </div>
+      )}
+    </div>
+  );
+  const panel = <RegistrationPanel reg={reg} email={v.user.email} canCancel={now < c.registrationClosesAt} />;
+
   return (
     <section className="container-page py-10 space-y-8">
       {joined && (
@@ -46,68 +76,46 @@ export default async function MyPage({ searchParams }: PageProps<"/me">) {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_380px] items-start [&>*]:min-w-0">
-        <div>
-          <h1 className="t-title mb-2">התוצר שלי</h1>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className={`pill ${status.cls}`}>
-              <span aria-hidden>{status.icon}</span> {status.label}
-            </span>
-            {s?.submittedAt && <span className="meta">הוגש לאחרונה: {formatDateTime(s.submittedAt, TIME_ZONE)}</span>}
-            {s?.submittedAt && s.draftUpdatedAt > s.submittedAt && editable && (
-              <span className="pill pill-primary">יש שינויים שנשמרו כטיוטה וטרם הוגשו</span>
-            )}
-          </div>
-          {s?.reviewNote && (s.reviewStatus === "needs_fix" || s.reviewStatus === "disqualified") && (
-            <div className="alert alert-warn mt-4">
-              <span aria-hidden>!</span>
-              <div>
-                <strong>משוב מהמארגנים:</strong> {s.reviewNote}
-              </div>
-            </div>
-          )}
-          {s?.lateEditUntil && now < s.lateEditUntil && (
-            <div className="alert alert-info mt-4">
-              <span aria-hidden>ℹ</span>
-              <span>נפתח לך חלון תיקון חריג עד {formatDateTime(s.lateEditUntil, TIME_ZONE)}. יש להגיש מחדש לאחר התיקון.</span>
-            </div>
-          )}
-        </div>
-        <RegistrationPanel reg={reg} email={v.user.email} canCancel={now < c.registrationClosesAt} />
-      </div>
-
       {editable ? (
         <SubmissionForm
+          header={header}
+          side={panel}
           draft={s?.draft ?? {}}
           coverSrc={coverSrc}
           creator={{ name: reg.fullName, avatarId: reg.avatarId, department: reg.department }}
           deadline={s?.lateEditUntil && now >= c.submissionDeadline ? formatDateTime(s.lateEditUntil, TIME_ZONE) : deadline}
         />
       ) : (
-        <div className="card space-y-4 max-w-3xl">
-          <h2 className="t-card">ההגשות ננעלו</h2>
-          <p className="text-[var(--text-muted)]">
-            מועד ההגשה ({deadline}) עבר. {s?.submitted ? "הגרסה שהוגשה היא זו שתוצג ותיבחן." : "לא הוגש תוצר — טיוטה שלא הוגשה אינה מועמדת."}
-          </p>
-          {s?.submitted && (
-            <dl className="grid gap-2 sm:grid-cols-[160px_1fr]">
-              <dt className="meta">שם</dt>
-              <dd>{s.submitted.title}</dd>
-              <dt className="meta">סוג</dt>
-              <dd>{submissionTypeLabel(s.submitted.mediaType, s.submitted.mediaTypeOther)}</dd>
-              <dt className="meta">קישור</dt>
-              <dd>
-                <a href={s.submitted.linkUrl} target="_blank" rel="noopener noreferrer" className="ltr underline break-all">
-                  {s.submitted.linkUrl}
-                </a>
-              </dd>
-            </dl>
-          )}
-          {s?.submitted && (
-            <Link href={`/gallery/${s.id}`} className="btn btn-secondary">
-              לעמוד התוצר
-            </Link>
-          )}
+        <div className="grid gap-8 lg:grid-cols-[1fr_380px] items-start [&>*]:min-w-0">
+          <div className="space-y-6">
+            {header}
+            <div className="card space-y-4">
+              <h2 className="t-card">ההגשות ננעלו</h2>
+              <p className="text-[var(--text-muted)]">
+                מועד ההגשה ({deadline}) עבר. {s?.submitted ? "הגרסה שהוגשה היא זו שתוצג ותיבחן." : "לא הוגש תוצר — טיוטה שלא הוגשה אינה מועמדת."}
+              </p>
+              {s?.submitted && (
+                <dl className="grid gap-2 sm:grid-cols-[160px_1fr]">
+                  <dt className="meta">שם</dt>
+                  <dd>{s.submitted.title}</dd>
+                  <dt className="meta">סוג</dt>
+                  <dd>{submissionTypeLabel(s.submitted.mediaType, s.submitted.mediaTypeOther)}</dd>
+                  <dt className="meta">קישור</dt>
+                  <dd>
+                    <a href={s.submitted.linkUrl} target="_blank" rel="noopener noreferrer" className="ltr underline break-all">
+                      {s.submitted.linkUrl}
+                    </a>
+                  </dd>
+                </dl>
+              )}
+              {s?.submitted && (
+                <Link href={`/gallery/${s.id}`} className="btn btn-secondary">
+                  לעמוד התוצר
+                </Link>
+              )}
+            </div>
+          </div>
+          <aside>{panel}</aside>
         </div>
       )}
     </section>
