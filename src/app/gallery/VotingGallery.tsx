@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { castBallotAction } from "@/app/actions";
 import { SubmissionCard, type CardData } from "@/components/SubmissionCard";
 
-type Item = CardData & { id: string; linkUrl: string; isOwn: boolean };
+type Item = CardData & { id: string; isOwn: boolean };
 
 export function VotingGallery({
   items,
@@ -77,27 +77,24 @@ export function VotingGallery({
                 d={it}
                 href={`/gallery/${it.id}`}
                 footer={
-                  <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[var(--border-subtle)]">
-                    <Link href={`/gallery/${it.id}`} className="btn btn-secondary btn-sm">
+                  <div className="flex flex-col gap-3 pt-3 border-t border-[var(--border-subtle)]">
+                    <Link href={`/gallery/${it.id}`} className="btn btn-secondary btn-sm self-start">
                       צפייה בתוצר
                     </Link>
-                    <a href={it.linkUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-                      קישור חיצוני ↗<span className="sr-only"> (נפתח בלשונית חדשה)</span>
-                    </a>
                     {round && (
-                      <label className={`choice !min-h-[40px] ms-auto ${disabled ? "opacity-50 !cursor-not-allowed" : ""}`}>
+                      <label className={`choice w-full ${disabled ? "opacity-50 !cursor-not-allowed" : ""}`}>
                         <input
                           type={single ? "radio" : "checkbox"}
                           name="vote"
                           checked={checked}
                           disabled={disabled}
                           onChange={() => toggle(it.id)}
-                          aria-label={`${single ? "בחירה" : "סימון"}: ${it.title}`}
+                          aria-label={`בחירה ב${it.creatorName}: ${it.title}`}
                         />
                         <span className="check" aria-hidden>
                           ✓
                         </span>
-                        <span>{it.isOwn ? "התוצר שלך" : checked ? "נבחר" : "בחירה"}</span>
+                        <span>{it.isOwn ? "התוצר שלך" : checked ? `בחרת ב${it.creatorName}` : `בחירה ב${it.creatorName}`}</span>
                       </label>
                     )}
                   </div>

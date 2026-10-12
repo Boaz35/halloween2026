@@ -67,7 +67,6 @@ export default async function GalleryPage() {
                   creatorName: i.creatorName,
                   avatarId: i.avatarId,
                   department: i.department,
-                  linkUrl: i.content.linkUrl,
                   isOwn: i.userId === v.userId,
                 }))}
                 round={round ? { id: round.id, kind: round.kind as "prelim" | "final", maxChoices: round.maxChoices } : null}
