@@ -17,7 +17,17 @@ import { readMotionPaused, subscribeMotionPaused, writeMotionPaused } from "@/li
  * first interaction anywhere on the page (pointer or key — a user activation), unless they muted
  * it before. A visible sound toggle (WCAG 1.4.2) stores the choice per browser.
  */
-const POSTER = "/brand/hero-loop-poster.jpg";
+/**
+ * Hero media lives in the public Supabase Storage bucket "media" (served from its CDN) instead of
+ * the repo. Two renditions of the same seamless loop: 1440p for large / high-density screens,
+ * 1080p otherwise. Chosen once on the client — <source media> is not reliable across browsers.
+ */
+const MEDIA_BASE = "https://dsdiepxisescwjmiguoh.supabase.co/storage/v1/object/public/media/hero";
+const POSTER = `${MEDIA_BASE}/hero-poster.jpg`;
+function pickRendition(): "1440" | "1080" {
+  const physicalWidth = window.innerWidth * (window.devicePixelRatio || 1);
+  return physicalWidth > 2200 ? "1440" : "1080";
+}
 const VOLUME = 0.8;
 const SOUND_KEY = "hero-sound"; // "off" = viewer muted it; anything else = unmute on first interaction
 const SOUND_EVENT = "hero-sound-change";
@@ -66,6 +76,8 @@ export function HeroVideo() {
   const audible = activated && !soundOff;
   const paused = userPaused || offscreen || hidden;
   const useVideo = !reduced && !failed;
+  // Rendition is decided once per page load (client only; the video element is client-rendered).
+  const [rendition] = useState(() => (typeof window === "undefined" ? "1080" : pickRendition()));
 
   useEffect(() => {
     const el = ref.current;
@@ -151,8 +163,8 @@ export function HeroVideo() {
             onPlaying={() => setPlaying(true)}
             onError={() => setFailed(true)}
           >
-            <source src="/brand/hero-loop.webm" type="video/webm" />
-            <source src="/brand/hero-loop.mp4" type="video/mp4" />
+            <source src={`${MEDIA_BASE}/hero-${rendition}.webm`} type="video/webm" />
+            <source src={`${MEDIA_BASE}/hero-${rendition}.mp4`} type="video/mp4" />
           </video>
         )}
         <div className="hero-video__shade" />

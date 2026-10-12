@@ -141,3 +141,17 @@ npm run dev:seed      # פיתוח בלבד: 12 נרשמים ו־7 תוצרים
 - **וידאו הירו חדש עם סאונד:** `test_Seedance 2.5_2026-10-12_10-38-18.mp4` (HEVC 1918×1080 + AAC סטריאו, 10 שניות). crossfade של 0.75 שניות לווידאו ולאודיו (afade/amix ידני; `acrossfade` קיצר את האודיו). WebM (VP9 + Opus 96k, כ־2.0MB) ו־MP4 (H.264 + AAC 128k, כ־2.5MB), שניהם 9.29 שניות.
 - **סאונד:** הווידאו מתחיל מושתק, כי זה המצב היחיד שבו ניגון אוטומטי מותר. באינטראקציה הראשונה בעמוד (pointerdown/keydown) הסאונד נפתח בעוצמה 0.8, אלא אם המשתמש השתיק קודם. כפתור "השתקה / הפעלת סאונד" גלוי (WCAG 1.4.2), וההעדפה נשמרת ב־localStorage. נבדק ב־Chromium בקליק אמיתי: נפתח, ממשיך לנגן, השתקה נשמרת אחרי רענון.
 - **favicon:** `src/app/icon.svg` (דלעת מכושפת: גוף בגוון גחלת, פנים זוהרות, נחשון ירוק וניצוץ), `favicon.ico` 32px ו־`apple-icon.png` 180px על רקע כהה. Next מייצר את תגי ה־link.
+
+## וידאו הירו מ־Supabase Storage (12.10.2026)
+
+- **מקור:** `test_Topaz Video Upscaler_2026-10-12_11-20-25.mp4` (H.264 3836×2160 ב־**16fps**, AAC, 88MB). המקור לא הועלה; הוכנו גרסאות רשת עם אותו crossfade לווידאו ולאודיו (9.31 שניות).
+- **Bucket ציבורי `media`** (מוגבל ל־video/webm, video/mp4 ותמונות, עד 50MB לקובץ), תיקייה `hero/`:
+  - `hero-1080.webm`: 2.3MB
+  - `hero-1080.mp4`: 3.1MB
+  - `hero-1440.webm`: 3.8MB
+  - `hero-1440.mp4`: 5.9MB
+  - `hero-poster.jpg`: 145KB
+- **העלאה:** `node --env-file=.env.local scripts/upload-hero-media.mjs <dir>` (idempotent, upsert). דורש `STORAGE_SERVER_KEY`, מקומי בלבד; Vercel לא צריך אותו.
+- **בחירת גרסה:** `HeroVideo` בוחר גרסה בצד הלקוח לפי רוחב פיזי (innerWidth × devicePixelRatio > 2200 → 1440p, אחרת 1080p). נבדק: דסקטופ ב־dpr 2 מקבל 1440p, נייד מקבל 1080p.
+- **בדיקות:** קריאה ציבורית עם content-type נכון; range requests מחזירים 206, כך ש־seek ולולאה עובדים; כתיבה בלי מפתח נחסמת. ה־CDN מחזיר `cache-control: no-cache` עם ETag, כלומר ביקור חוזר מקבל 304 קטן.
+- **נוקה:** `public/brand/hero-loop.*` הוסרו מהריפו.
