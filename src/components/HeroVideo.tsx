@@ -8,12 +8,40 @@ import { readMotionPaused, subscribeMotionPaused, writeMotionPaused } from "@/li
  * Desktop: covers the whole hero behind the text, framed so the flamingo sits left of centre and a
  * shade keeps the right-hand text readable. Mobile: a full-bleed 16:9 strip under the text and CTA.
  *
- * Muted, no controls, decorative (aria-hidden). The still poster shows until the video plays, and
+ * No controls, decorative (aria-hidden). The still poster shows until the video plays, and
  * stays if autoplay is blocked, the file fails, or the viewer prefers reduced motion. A visible
  * pause button (required for >5s autoplay, WCAG 2.2.2) shares the hero pause preference with the
  * headline; an off-screen hero or hidden tab also pauses it.
+ *
+ * Sound: browsers only autoplay muted, so the loop starts muted and is unmuted on the viewer's
+ * first interaction anywhere on the page (pointer or key — a user activation), unless they muted
+ * it before. A visible sound toggle (WCAG 1.4.2) stores the choice per browser.
  */
 const POSTER = "/brand/hero-loop-poster.jpg";
+const VOLUME = 0.8;
+const SOUND_KEY = "hero-sound"; // "off" = viewer muted it; anything else = unmute on first interaction
+const SOUND_EVENT = "hero-sound-change";
+function readSoundOff() {
+  try {
+    return localStorage.getItem(SOUND_KEY) === "off";
+  } catch {
+    return false;
+  }
+}
+function writeSoundOff(off: boolean) {
+  try {
+    localStorage.setItem(SOUND_KEY, off ? "off" : "on");
+  } catch {}
+  window.dispatchEvent(new Event(SOUND_EVENT));
+}
+function subscribeSound(cb: () => void) {
+  window.addEventListener(SOUND_EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(SOUND_EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
+}
 const REDUCED = "(prefers-reduced-motion: reduce)";
 const reducedSnapshot = () => window.matchMedia(REDUCED).matches;
 function subscribeReduced(cb: () => void) {
@@ -32,6 +60,10 @@ export function HeroVideo() {
   const [hidden, setHidden] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
+  const soundOff = useSyncExternalStore(subscribeSound, readSoundOff, () => false);
+  // True once the page has had a user activation, so the browser allows audio.
+  const [activated, setActivated] = useState(false);
+  const audible = activated && !soundOff;
   const paused = userPaused || offscreen || hidden;
   const useVideo = !reduced && !failed;
 
@@ -54,6 +86,51 @@ export function HeroVideo() {
     if (paused) v.pause();
     else v.play().catch(() => setPlaying(false)); // autoplay blocked → poster stays
   }, [paused, useVideo]);
+
+  // First interaction anywhere unlocks audio. Must unmute synchronously inside the event handler
+  // (user activation). The sound toggle handles its own clicks, so it is ignored here.
+  useEffect(() => {
+    if (!useVideo || activated) return;
+    const onFirst = (e: Event) => {
+      if ((e.target as Element | null)?.closest?.("[data-sound-toggle]")) return;
+      const v = videoRef.current;
+      if (v && !readSoundOff()) {
+        v.muted = false;
+        v.volume = VOLUME;
+        if (v.paused && !paused) v.play().catch(() => {});
+      }
+      setActivated(true);
+    };
+    const opts = { capture: true } as const;
+    window.addEventListener("pointerdown", onFirst, opts);
+    window.addEventListener("keydown", onFirst, opts);
+    return () => {
+      window.removeEventListener("pointerdown", onFirst, opts);
+      window.removeEventListener("keydown", onFirst, opts);
+    };
+  }, [useVideo, activated, paused]);
+
+  // Keep the element in sync with the preference (e.g. toggled in another tab).
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = !audible;
+    if (audible) v.volume = VOLUME;
+  }, [audible]);
+
+  const toggleSound = () => {
+    const v = videoRef.current;
+    const turnOn = !audible;
+    if (v) {
+      v.muted = !turnOn; // inside the click → counts as user activation
+      if (turnOn) {
+        v.volume = VOLUME;
+        if (v.paused && !paused) v.play().catch(() => {});
+      }
+    }
+    setActivated(true);
+    writeSoundOff(!turnOn);
+  };
 
   return (
     <div ref={ref} className="hero-video" data-playing={playing || undefined}>
@@ -81,9 +158,16 @@ export function HeroVideo() {
         <div className="hero-video__shade" />
       </div>
       {!reduced && (
-        <button type="button" className="hero-video__toggle btn btn-ghost btn-sm" onClick={() => writeMotionPaused(!userPaused)} aria-pressed={userPaused}>
-          {userPaused ? "▶ הפעלת אנימציה" : "❚❚ עצירת אנימציה"}
-        </button>
+        <div className="hero-video__controls">
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => writeMotionPaused(!userPaused)} aria-pressed={userPaused}>
+            {userPaused ? "▶ הפעלת אנימציה" : "❚❚ עצירת אנימציה"}
+          </button>
+          {useVideo && (
+            <button type="button" className="btn btn-ghost btn-sm" data-sound-toggle onClick={toggleSound} aria-pressed={audible}>
+              {audible ? "🔊 השתקה" : "🔇 הפעלת סאונד"}
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
