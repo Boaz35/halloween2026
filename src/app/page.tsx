@@ -216,7 +216,7 @@ function Timeline({ o, now }: { o: Overview; now: Date }) {
   const finalRound = o.rounds.final;
   const items: { t: string; d: string; note?: string; at?: Date | null }[] = [
     { t: "פתיחת ההרשמה", d: formatDateTime(c.registrationOpensAt, TIME_ZONE), at: c.registrationOpensAt },
-    { t: "סגירת ההרשמה", d: formatDeadline(c.registrationClosesAt, TIME_ZONE), note: "ההרשמה פתוחה עד חצות", at: c.registrationClosesAt },
+    { t: "סגירת ההרשמה", d: formatDeadline(c.registrationClosesAt, TIME_ZONE), at: c.registrationClosesAt },
     { t: "דדליין הגשת תוצרים", d: formatDateTime(c.submissionDeadline, TIME_ZONE), at: c.submissionDeadline },
     {
       t: "מוקדמות",

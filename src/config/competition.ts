@@ -17,10 +17,10 @@ export const ALLOWED_DOMAIN = (process.env.ALLOWED_GOOGLE_DOMAIN || "zemingo.com
  */
 export const ORGANIZER_EMAILS: readonly string[] = ["yuval.b@zemingo.com", "boaz.b@zemingo.com"];
 
-/** Schedule as Asia/Jerusalem wall-clock. Confirmed dates are read-only in the UI; only the P01 close instant is adjustable on 14.10. */
+/** Schedule as Asia/Jerusalem wall-clock. Confirmed dates are read-only in the UI; only the close hour on 15.10 is adjustable (C19). */
 export const DEFAULT_SCHEDULE = {
   registrationOpens: "2026-10-11T00:00", // C06
-  registrationCloses: "2026-10-15T00:00", // C06 date; exact instant is proposal P01 (end of 14.10, exclusive)
+  registrationCloses: "2026-10-15T17:00", // C19 (owner, 12.10.2026): 15.10 at 17:00, exclusive — supersedes C06 date / P01
   submissionDeadline: "2026-10-25T18:00", // C07
 } as const;
 

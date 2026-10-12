@@ -24,6 +24,7 @@ Updated: 2026-10-11. Product owner: the requesting user; organizational administ
 | C16 | Halloween avatar characters will use the supplied flat portrait reference as style guidance; final graphics are deferred |
 | C17 | Start building now with temporary visuals; graphic design continues separately and must not block implementation |
 | C18 | 2026-10-12 owner decision: boaz.b@zemingo.com is an additional organizer (alongside C02) |
+| C19 | 2026-10-12 owner decision: registration closes 2026-10-15 at 17:00 Asia/Jerusalem (exclusive). Supersedes the C06 close date and P01 |
 
 Confirmed update: the user requested design instructions based on the supplied references and the Zemingo flamingo/zebra identity. Implement the concrete proposal in DESIGN.md; exact visual values are design recommendations. Only final artwork remains deferred.
 
@@ -33,7 +34,7 @@ These may guide reversible implementation. They are not accepted user decisions 
 
 | ID | Proposal | Needed before |
 |---|---|---|
-| P01 | Registration closes exclusively at 2026-10-15 00:00 local, including all of Oct 14 | Live registration |
+| P01 | ~~Registration closes exclusively at 2026-10-15 00:00 local~~ — superseded by C19 | — |
 | P02 | One entry per competitor | Live registration |
 | P03 | Cancellation before the cutoff removes a registration from the count; withdrawal after it does not | Live registration |
 | P04 | No self-voting | Voting |

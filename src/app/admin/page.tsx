@@ -112,7 +112,7 @@ export default async function AdminHome() {
             <dd>{formatDateTime(c.registrationOpensAt, TIME_ZONE)}</dd>
             <dt className="meta">סגירת הרשמה</dt>
             <dd>
-              {formatDeadline(c.registrationClosesAt, TIME_ZONE)} <span className="pill">מועד מדויק: הצעה P01</span>
+              {formatDeadline(c.registrationClosesAt, TIME_ZONE)} <span className="pill">החלטה C19</span>
             </dd>
             <dt className="meta">דדליין הגשה</dt>
             <dd>{formatDateTime(c.submissionDeadline, TIME_ZONE)}</dd>
@@ -121,15 +121,15 @@ export default async function AdminHome() {
           {!o.snapshot && (
             <ActionForm action={setRegistrationCloseAction} className="space-y-3 pt-3 border-t border-[var(--border-subtle)]">
               <label className="label" htmlFor="registrationClosesAt">
-                שעת סגירת ההרשמה ב־14.10 (עד חצות, לא כולל)
+                שעת סגירת ההרשמה ב־15.10
               </label>
               <input
                 id="registrationClosesAt"
                 name="registrationClosesAt"
                 type="datetime-local"
                 className="field ltr"
-                min="2026-10-14T00:01"
-                max="2026-10-15T00:00"
+                min="2026-10-15T00:01"
+                max="2026-10-16T00:00"
                 defaultValue={utcToZonedInput(c.registrationClosesAt, TIME_ZONE)}
               />
               <SubmitButton className="btn btn-secondary" confirm="לעדכן את שעת סגירת ההרשמה?">

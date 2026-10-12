@@ -135,16 +135,16 @@ export function computePhase(
 }
 
 /**
- * C06 confirms the dates; only the exact close instant (P01) may be adjusted, and only within
- * 14.10 (Asia/Jerusalem) up to 15.10 00:00, in the future, before the count is frozen.
+ * C19 fixes the close on 15.10.2026 (17:00). Only the hour may be adjusted, within 15.10
+ * (Asia/Jerusalem), in the future, before the count is frozen.
  */
 export async function setRegistrationCloseTime(db: DB, actorId: string, closesAt: Date, clock: Clock) {
   const c = await getCompetition(db);
   const now = at(clock);
   if (await ensureRegistrationSnapshot(db, now)) throw new AppError("ספירת הנרשמים כבר ננעלה — אי אפשר לשנות את מועד הסגירה.");
-  const earliest = zonedTimeToUtc("2026-10-14T00:00", c.timeZone);
-  const latest = zonedTimeToUtc("2026-10-15T00:00", c.timeZone);
-  if (closesAt <= earliest || closesAt > latest) throw new AppError("מועד הסגירה חייב להיות במהלך 14.10 (עד חצות), לפי ההחלטה המאושרת.");
+  const earliest = zonedTimeToUtc("2026-10-15T00:00", c.timeZone);
+  const latest = zonedTimeToUtc("2026-10-16T00:00", c.timeZone);
+  if (closesAt <= earliest || closesAt > latest) throw new AppError("מועד הסגירה חייב להיות במהלך 15.10, לפי ההחלטה המאושרת.");
   if (closesAt <= now) throw new AppError("מועד הסגירה חייב להיות בעתיד.");
   await db.update(competitions).set({ registrationClosesAt: closesAt, updatedAt: now }).where(eq(competitions.id, c.id));
   await audit(db, {

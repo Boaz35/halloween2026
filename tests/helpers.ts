@@ -8,9 +8,9 @@ import { register } from "@/server/registration";
 export const T = {
   beforeOpen: new Date("2026-10-10T12:00:00Z"),
   regOpen: new Date("2026-10-12T09:00:00Z"),
-  // Registration closes 15.10 00:00 Asia/Jerusalem (IDT, +3) = 14.10 21:00Z
-  justBeforeClose: new Date("2026-10-14T20:59:59Z"),
-  close: new Date("2026-10-14T21:00:00Z"),
+  // Registration closes 15.10 17:00 Asia/Jerusalem (IDT, +3) = 15.10 14:00Z (C19)
+  justBeforeClose: new Date("2026-10-15T13:59:59Z"),
+  close: new Date("2026-10-15T14:00:00Z"),
   building: new Date("2026-10-20T09:00:00Z"),
   // Submission deadline 25.10 18:00 Asia/Jerusalem (IST, +2 after DST ends) = 16:00Z
   justBeforeDeadline: new Date("2026-10-25T15:59:59Z"),

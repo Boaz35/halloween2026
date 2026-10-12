@@ -18,7 +18,7 @@ This is a handoff for an operational internal application. Deliver working incre
 - Initial organizer account: yuval.b@zemingo.com. Do not infer that the person requesting this project is another administrator.
 - Individual participation. Non-competing employees can vote.
 - After organizational sign-in, show the join page to users not yet registered. Joining requires an explicitly entered full name, one department (Studio, R&D or Strategy), and one catalog Halloween avatar. Only a successful complete submission counts as registration. Read docs/REGISTRATION_AND_AVATARS.md.
-- Registration: opens 2026-10-11, closes 2026-10-14; exact closing time remains proposed.
+- Registration: opens 2026-10-11, closes 2026-10-15 at 17:00 Asia/Jerusalem, exclusive (owner decision C19, 12.10.2026; supersedes the 14.10 date).
 - Submission cutoff: 2026-10-25 18:00 Asia/Jerusalem.
 - Freeze registration count at registration close. Count >= 10 requires preliminaries, even if fewer people eventually submit.
 - Preliminary date: 2026-10-26, up to 3 distinct equally weighted choices per voter.
