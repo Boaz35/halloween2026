@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata, Viewport } from "next";
 import { Frank_Ruhl_Libre, Karantina, Rubik } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -46,7 +47,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </main>
         <footer className="container-page py-10 mt-8 meta flex flex-wrap items-center justify-between gap-3 section-rule">
           <span>{COMPETITION_NAME} · מערכת פנימית לעובדי Zemingo</span>
-          <span>כל המועדים לפי שעון ישראל</span>
+          <span>
+            כל המועדים לפי שעון ישראל ·{" "}
+            <Link href="/privacy" className="underline hover:text-[var(--text)]">
+              מדיניות פרטיות
+            </Link>
+          </span>
         </footer>
       </body>
     </html>
