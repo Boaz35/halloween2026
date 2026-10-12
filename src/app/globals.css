@@ -237,7 +237,8 @@ select.field { appearance: none; background-image: linear-gradient(45deg, transp
 .timeline li[data-state="next"] .timeline__dot { background: var(--primary); box-shadow: 0 0 0 4px rgb(255 242 130 / 0.12), 0 0 16px 2px rgb(255 242 130 / 0.35); }
 
 /* Countdown — bare numerals, hairline separated */
-.countdown { display: flex; align-items: flex-end; gap: 0; }
+/* Read like a clock, left to right: days · hours · minutes. Right-aligned with the RTL label above. */
+.countdown { display: flex; align-items: flex-end; gap: 0; direction: ltr; justify-content: flex-end; }
 .countdown__cell { padding-inline: 24px; border-inline-start: 1px solid var(--border-subtle); text-align: center; }
 .countdown__cell:first-child { padding-inline-start: 0; border-inline-start: 0; }
 /* Display face, large: the real deadline is the second-loudest thing in the hero after the headline. */
@@ -371,14 +372,14 @@ select.field { appearance: none; background-image: linear-gradient(45deg, transp
 .hero-grid > .hero-text { grid-area: text; }
 .hero-grid > .hero-mascot { grid-area: mascot; justify-self: center; }
 @media (min-width: 768px) {
-  /* direction:ltr pins the physical order: text column left, mascot column right. */
-  .hero-grid { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); grid-template-areas: "text mascot"; column-gap: 40px; direction: ltr; }
+  /* direction:ltr pins the physical order: mascot column left, text + CTA column right. */
+  .hero-grid { grid-template-columns: minmax(0, 45fr) minmax(0, 55fr); grid-template-areas: "mascot text"; column-gap: 40px; direction: ltr; }
   .hero-grid > * { direction: rtl; }
   .hero-grid > .hero-text { text-align: right; }
   /* Pin both columns to the top: opening the "how it works" expander grows the text column,
-     and the mascot should stay beside the headline (sticky) instead of drifting to the middle. */
+     and the mascot stays beside the headline instead of drifting to the middle. It scrolls with
+     the page (no sticky) — a pinned column reads as a separate scroll. */
   .hero-grid { align-items: start; }
-  .hero-grid > .hero-mascot { position: sticky; top: 96px; }
 }
 
 /* ── Avatars (assets/avatars/source/README.md): round 1:1, cover, centred, no extra zoom ── */
@@ -460,6 +461,69 @@ select.field { appearance: none; background-image: linear-gradient(45deg, transp
 .howto__list li::before { content: ""; position: absolute; inset-inline-start: 0; top: 0.7em; width: 6px; height: 6px; background: var(--control-border); }
 .howto__tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .howto__tags li { border: 1px solid var(--border-subtle); padding: 4px 12px; font-size: 0.875rem; color: var(--text); }
+
+
+
+
+
+
+
+
+/* ── Mascot video loop (hero): video sits exactly over the poster; poster stays until it plays ── */
+.mascot__ambient { position: relative; }
+.mascot__video {
+  position: absolute; inset: 0; height: 100%; width: auto; aspect-ratio: 2 / 3;
+  object-fit: contain; opacity: 0; transition: opacity 240ms ease; pointer-events: none;
+}
+.mascot[data-video="playing"] .mascot__video { opacity: 1; }
+/* The loop is transparent: once it plays, the still poster must go, or it shows through the motion. */
+.mascot__img { transition: opacity 240ms ease; }
+.mascot[data-video="playing"] .mascot__img { opacity: 0; }
+/* The video carries its own motion — no CSS sway on top of it (avoid doubled movement). */
+.mascot[data-video] .mascot__ambient { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .mascot__video { display: none; } }
+
+
+
+
+
+
+
+
+/* ── Hero background video (full width) ── */
+.hero--video { display: flex; flex-direction: column; overflow: hidden; }
+.hero--video .hero-grid { display: block; }
+.hero--video .hero-text { max-width: 600px; }
+.hero-video { position: relative; order: 2; }
+.hero-video__frame { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; }
+.hero-video__media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.hero-video__video { opacity: 0; transition: opacity 400ms ease; }
+.hero-video[data-playing] .hero-video__video { opacity: 1; }
+/* Phone strip: fade into the page at top and bottom. */
+.hero-video__shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, var(--bg) 0%, transparent 18%, transparent 78%, var(--bg) 100%);
+}
+.hero-video__toggle { font-size: 0.8rem; min-height: 36px; color: var(--text-muted); margin: 4px var(--gutter) 0; }
+
+@media (min-width: 768px) {
+  .hero--video { display: block; min-height: clamp(600px, 84vh, 880px); }
+  /* Single text column on the right (RTL start); undo the two-column mascot grid. */
+  .hero--video .hero-grid { display: flex; align-items: center; min-height: inherit; direction: rtl; grid-template-columns: none; }
+  .hero-video { position: absolute; inset: 0; z-index: 0; }
+  .hero-video__frame { position: absolute; inset: 0; aspect-ratio: auto; }
+  /* Wider than the hero and shifted left: the flamingo (frame centre) lands at ~36% of the width,
+     clear of the right-hand text column even when its wings spread. */
+  .hero-video__media { left: -28%; width: 128%; }
+  /* Readability: deep shade behind the text (right), fade into the page at the bottom. */
+  .hero-video__shade {
+    background:
+      linear-gradient(to left, var(--bg) 0%, rgb(14 13 11 / 0.88) 28%, rgb(14 13 11 / 0.45) 48%, transparent 64%),
+      linear-gradient(to bottom, rgb(14 13 11 / 0.55) 0%, transparent 16%, transparent 72%, var(--bg) 100%);
+  }
+  .hero-video__toggle { position: absolute; left: var(--gutter); bottom: 20px; margin: 0; z-index: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .hero-video__video { display: none; } }
 
 
 

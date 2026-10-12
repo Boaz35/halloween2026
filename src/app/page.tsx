@@ -2,9 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DEV_LOGIN_ENABLED } from "@/auth";
 import { Countdown } from "@/components/Countdown";
-import { HalloweenMascot } from "@/components/HalloweenMascot";
 import { HeroHeadline } from "@/components/HeroHeadline";
-import { HeroWall } from "@/components/HeroWall";
+import { HeroVideo } from "@/components/HeroVideo";
 import { SUBMISSION_TYPES, TIME_ZONE } from "@/config/competition";
 import { getDb } from "@/db";
 import { formatDate, formatDateTime, formatDeadline } from "@/lib/time";
@@ -101,13 +100,13 @@ function Hero({ v, o, now }: { v: Viewer | null; o: Overview; now: Date }) {
   }
 
   return (
-    <section className="hero" aria-labelledby="hero-h">
-      <HeroWall />
+    <section className="hero hero--video" aria-labelledby="hero-h">
+      <HeroVideo />
       <div className="container-page hero-grid relative z-[1] py-12 md:py-20">
         <div className="hero-text relative z-10">
           <HeroHeadline id="hero-h" className="t-hero mb-6" lines={["הרעיונות הכי מפחידים שלכם.", "הבמה שלנו."]} />
           <p className="text-lg text-[var(--text-muted)] max-w-[48ch] mb-4">
-            נרשמים, יוצרים פרויקט Halloween מקורי בכל מדיום — משחק, אתר, AR, אנימציה ועוד — ומגישים אותו עד{" "}
+            נרשמים, יוצרים פרויקט Halloween מקורי ומגישים אותו עד{" "}
             <span className="text-[var(--text)]">{dayMonth(c.submissionDeadline)}</span>. כל עובדי החברה מצביעים, והזוכה יוכרז ב־Happy Hour
             Halloween ב־29.10.
           </p>
@@ -156,9 +155,6 @@ function Hero({ v, o, now }: { v: Viewer | null; o: Overview; now: Date }) {
           )}
         </div>
 
-        <div className="hero-mascot">
-          <HalloweenMascot variant="hero" motion="ambient" />
-        </div>
       </div>
     </section>
   );
