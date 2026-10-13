@@ -1,0 +1,14 @@
+# Render Blueprint for the standalone Google Images Halloween mockup (static site).
+# The main app deploys on Vercel and is not affected by this file.
+services:
+  - type: web
+    name: google-search-mockup
+    runtime: static
+    branch: claude/google-search-mockup-28c940
+    rootDir: google-search-mockup
+    buildCommand: echo "static site, nothing to build"
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache

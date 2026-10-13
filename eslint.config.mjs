@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone static Halloween prank page, not part of the app.
+    "google-search-mockup/**",
   ]),
 ]);
 
