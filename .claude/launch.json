@@ -14,11 +14,8 @@
       "name": "google-mockup",
       "runtimeExecutable": "python3",
       "runtimeArgs": [
-        "-m",
-        "http.server",
-        "8080",
-        "--directory",
-        "google-search-mockup"
+        "scripts/serve-google-mockup.py",
+        "8080"
       ],
       "port": 8080
     }

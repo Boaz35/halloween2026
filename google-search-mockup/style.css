@@ -116,7 +116,8 @@ svg { display: block; width: 100%; height: 100%; fill: currentColor; }
 /* ---------- the scare ---------- */
 #scare { position: fixed; left: -9999px; top: 0; width: 2px; height: 2px; }
 #fx { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10001; display: none; }
-#shield { position: fixed; inset: 0; z-index: 10000; display: none; cursor: none; }
+#screen { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10000; display: none; }
+#shield { position: fixed; inset: 0; z-index: 10002; display: none; cursor: none; }
 
 /* in-tile playback */
 .thumb.playing { cursor: default; }
@@ -129,5 +130,9 @@ html.takeover #scare {
   width: 100vw !important; height: 100vh !important;
   object-fit: cover; background: #000; z-index: 9999; border-radius: 0;
 }
-html.takeover #shield { display: block; }
+html.locked, html.locked * { cursor: none !important; }
+html.locked #shield { display: block; }
+/* The crash page gives the cursor back so its link and button can be hovered. */
+html.locked.show-cursor, html.locked.show-cursor * { cursor: default !important; }
+html.locked.show-cursor #shield.over-cta { cursor: pointer !important; }
 html.takeover body { background: #000; }
