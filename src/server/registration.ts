@@ -2,11 +2,11 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { ACTIVE_AVATAR_IDS, DEPARTMENT_IDS } from "@/config/competition";
 import type { DB } from "@/db";
-import { competitions, registrationEvents, registrations, roundCandidates, submissions, votingRounds } from "@/db/schema";
+import { competitions, registrationEvents, registrations, roundCandidates, submissions, users, votingRounds } from "@/db/schema";
 import type { Registration } from "@/db/schema";
 import { audit } from "./audit";
 import { at, type Clock } from "./clock";
-import { getCompetition, isRegistrationOpen } from "./competition";
+import { ensureRegistrationSnapshot, getCompetition, isRegistrationOpen } from "./competition";
 import { AppError } from "./errors";
 
 export const registrationSchema = z.object({
@@ -104,6 +104,65 @@ export async function register(db: DB, userId: string, raw: unknown, clock: Cloc
     }
     // Already registered: return the stored details unchanged (no silent overwrite).
     return { registration: existing, created: false };
+  });
+}
+
+/**
+ * Owner decision C20 — organizer-recorded late registration after the close, so a specific employee
+ * can still submit before the submission deadline. The frozen registration count is NOT changed:
+ * the snapshot is taken first, and the event is typed "registered_late" with a time after the close,
+ * so it can never enter the snapshot. The person must have signed in once (a verified users row).
+ */
+export async function registerLateException(db: DB, actorId: string, email: string, raw: unknown, reason: string, clock: Clock) {
+  const input = parseRegistration(raw);
+  const why = reason.trim();
+  if (why.length < 5) throw new AppError("נדרש נימוק לחריג (לפחות 5 תווים).", "validation", { reason: "נדרש נימוק לחריג" });
+  const addr = email.trim().toLowerCase();
+  const [u] = await db.select().from(users).where(eq(users.email, addr));
+  if (!u) {
+    throw new AppError("החשבון הזה עוד לא נכנס לאתר. יש לבקש להיכנס פעם אחת עם Google ואז לנסות שוב.", "validation", {
+      email: "החשבון עוד לא נכנס לאתר",
+    });
+  }
+  if (u.disabledAt) throw new AppError("החשבון מושבת.");
+  // Freeze the count before anything is added after the close.
+  await ensureRegistrationSnapshot(db, clock);
+  const base = await getCompetition(db);
+  return db.transaction(async (tx) => {
+    const c = await lockCompetition(tx, base.id);
+    const now = at(clock);
+    if (now < c.registrationClosesAt) throw new AppError("ההרשמה עדיין פתוחה. אפשר להירשם בדרך הרגילה.");
+    if (now >= c.submissionDeadline) throw new AppError("מועד ההגשה עבר. אין טעם ברישום חריג.");
+    const [existing] = await tx
+      .select()
+      .from(registrations)
+      .where(and(eq(registrations.competitionId, c.id), eq(registrations.userId, u.id)))
+      .for("update");
+    if (existing?.withdrawnAt) throw new AppError("המשתמש פרש מהתחרות ולא ניתן לרשום אותו מחדש.");
+    if (isActive(existing)) throw new AppError("המשתמש כבר רשום לתחרות.");
+    const details = { reason: why, lateException: true };
+    let r: Registration;
+    if (existing) {
+      [r] = await tx
+        .update(registrations)
+        .set({ ...input, cancelledAt: null, registeredAt: now, updatedAt: now })
+        .where(eq(registrations.id, existing.id))
+        .returning();
+    } else {
+      [r] = await tx
+        .insert(registrations)
+        .values({ competitionId: c.id, userId: u.id, ...input, registeredAt: now, updatedAt: now })
+        .returning();
+    }
+    await addEvent(tx, { competitionId: c.id, registrationId: r.id, userId: u.id, type: "registered_late", occurredAt: now, actorUserId: actorId, details });
+    await audit(tx, {
+      actorUserId: actorId,
+      action: "registration.late_exception",
+      entityType: "registration",
+      entityId: r.id,
+      details: { ...details, email: addr },
+    });
+    return r;
   });
 }
 

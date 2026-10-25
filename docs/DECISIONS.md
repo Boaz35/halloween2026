@@ -25,6 +25,7 @@ Updated: 2026-10-11. Product owner: the requesting user; organizational administ
 | C17 | Start building now with temporary visuals; graphic design continues separately and must not block implementation |
 | C18 | 2026-10-12 owner decision: boaz.b@zemingo.com is an additional organizer (alongside C02) |
 | C19 | 2026-10-12 owner decision: registration closes 2026-10-15 at 17:00 Asia/Jerusalem (exclusive). Supersedes the C06 close date and P01 |
+| C20 | 2026-10-25 owner decision: organizers may record a late registration exception after the close (before the submission deadline) for a specific employee, with a reason. The frozen registration count and the prelim decision do not change; the person can submit like any participant. Logged as `registration.late_exception` |
 
 Confirmed update: the user requested design instructions based on the supplied references and the Zemingo flamingo/zebra identity. Implement the concrete proposal in DESIGN.md; exact visual values are design recommendations. Only final artwork remains deferred.
 

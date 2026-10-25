@@ -9,7 +9,7 @@ import { zonedTimeToUtc } from "@/lib/time";
 import { serverNow } from "@/server/clock";
 import { publishGallery, recordPrelimOverride, setRegistrationCloseTime } from "@/server/competition";
 import { AppError, runAction, type ActionResult } from "@/server/errors";
-import { cancelRegistration, register, updateRegistrationProfile, withdraw } from "@/server/registration";
+import { cancelRegistration, register, registerLateException, updateRegistrationProfile, withdraw } from "@/server/registration";
 import { requireOrganizerAction, requireViewerAction } from "@/server/session";
 import { grantLateEdit, REVIEW_STATUSES, reviewSubmission, saveDraft, submit, uploadCover, type ReviewStatus } from "@/server/submission";
 import { chooseViewOnly } from "@/server/users";
@@ -215,6 +215,17 @@ export async function organizerWithdrawAction(_: Prev, fd: FormData) {
     await withdraw(await getDb(), v.userId, str(fd, "userId"), reason, serverNow);
     refreshAll();
     return { message: "הפרישה נרשמה." };
+  });
+}
+
+/** C20 — organizer-recorded late registration (after the close, before the submission deadline). */
+export async function lateRegistrationAction(_: Prev, fd: FormData) {
+  return runAction(async () => {
+    const v = await requireOrganizerAction();
+    const profile = { fullName: str(fd, "fullName"), department: str(fd, "department"), avatarId: str(fd, "avatarId") };
+    const r = await registerLateException(await getDb(), v.userId, str(fd, "email"), profile, str(fd, "reason"), serverNow);
+    refreshAll();
+    return { message: `${r.fullName} נרשם/ה כחריג. אפשר להיכנס ל"התוצר שלי" ולהגיש עד הדדליין.` };
   });
 }
 

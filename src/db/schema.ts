@@ -88,7 +88,7 @@ export const registrations = pgTable(
 /**
  * Append-only registration history (TECHNICAL_SPEC §5/§6). The cutoff snapshot is derived from
  * these events, so later withdrawals or re-joins never rewrite who was registered at the cutoff.
- * type: registered | rejoined | cancelled | withdrawn
+ * type: registered | rejoined | cancelled | withdrawn | registered_late (C20, after the close; never in the snapshot)
  */
 export const registrationEvents = pgTable(
   "registration_events",

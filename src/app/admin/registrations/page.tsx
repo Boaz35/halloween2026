@@ -1,6 +1,7 @@
-import { organizerWithdrawAction } from "@/app/actions";
+import { lateRegistrationAction, organizerWithdrawAction } from "@/app/actions";
 import { ActionForm } from "@/components/ActionForm";
 import { Avatar } from "@/components/Avatar";
+import { ProfileFields } from "@/components/ProfileFields";
 import { SubmitButton } from "@/components/SubmitButton";
 import { departmentLabel, TIME_ZONE } from "@/config/competition";
 import { getDb } from "@/db";
@@ -33,6 +34,31 @@ export default async function RegistrationsAdmin() {
           יצוא CSV
         </a>
       </div>
+      {now >= c.registrationClosesAt && now < c.submissionDeadline && (
+        <details className="card">
+          <summary className="t-card cursor-pointer">רישום חריג אחרי סגירת ההרשמה</summary>
+          <ActionForm action={lateRegistrationAction} className="mt-4 space-y-5 max-w-xl">
+            <p className="meta">
+              החלטת בעלים C20. העובד/ת צריך/ה להיכנס לאתר פעם אחת עם Google לפני הרישום. ספירת הנרשמים הנעולה לא משתנה, ואחרי הרישום
+              אפשר להגיש ב״התוצר שלי״ עד {formatDateTime(c.submissionDeadline, TIME_ZONE)}. הפעולה נרשמת ביומן.
+            </p>
+            <div>
+              <label htmlFor="late-email" className="label">
+                מייל ארגוני <span aria-hidden className="text-[var(--primary)]">*</span>
+              </label>
+              <input id="late-email" name="email" type="email" className="field ltr" required placeholder="name@zemingo.com" />
+            </div>
+            <ProfileFields />
+            <div>
+              <label htmlFor="late-reason" className="label">
+                נימוק <span aria-hidden className="text-[var(--primary)]">*</span>
+              </label>
+              <input id="late-reason" name="reason" className="field" required minLength={5} />
+            </div>
+            <SubmitButton confirm="לרשום את העובד/ת כחריג אחרי סגירת ההרשמה?">רישום חריג</SubmitButton>
+          </ActionForm>
+        </details>
+      )}
       <div className="table-wrap" tabIndex={0} aria-label="טבלת נרשמים (גלילה אופקית בנייד)">
         <table className="table min-w-[820px]">
           <thead>
